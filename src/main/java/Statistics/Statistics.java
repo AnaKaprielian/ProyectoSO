@@ -9,8 +9,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Statistics {
 
     private static Statistics instance;
-    List<OrderStatistic> orderStatistics = new CopyOnWriteArrayList<>();
-    List<DeliverStatistic> deliveriesStatistics = new CopyOnWriteArrayList<>();
+    static List<OrderStatistic> orderStatistics = new CopyOnWriteArrayList<>();
+    static List<DeliverStatistic> deliveriesStatistics = new CopyOnWriteArrayList<>();
 
     public static Statistics getInstance() {
         if (instance == null) {
@@ -24,14 +24,48 @@ public class Statistics {
         orderStatistics.add(orderStatistic);
     }
 
-    public void addDeliveryToStatistics(DeliveryMan delivery, Order order, int deliveryTime) throws InterruptedException {
-
+    public static void addDeliveryToStatistics(DeliveryMan delivery, Order order, int deliveryTime) throws InterruptedException {
         DeliverStatistic deliveryModel = new DeliverStatistic(delivery, order, deliveryTime);
         deliveriesStatistics.add(deliveryModel);
-
-        // System.out.println("deliverysize" + deliveriesStatistics.size());
-
-//        TDelivery.release();
     }
 
+    public static List<OrderStatistic> getOrderStatistics() {
+        return orderStatistics;
+    }
+
+    public static List<DeliverStatistic> getDeliveriesStatistics() {
+        return deliveriesStatistics;
+    }
+
+    
+
+
+
+//     for (EstadisticoOrder order : orderStatistics) {
+//         if (order.getOrder().getClient().getType() == 1) {
+//             int horasOrderVIP = Integer.parseInt(order.getHour());
+//             // int minOrderVIP = Integer.parseInt(order.getHour().split(":")[1]);
+//             contadorTiempoOrderVIP += horasOrderVIP;
+//             cantidadOrderVIP++;
+//         } else {
+//             int horasNoVIP = Integer.parseInt(order.getHour());
+//             // int minNoVIP = Integer.parseInt(order.getHour().split(":")[1]);
+//             contadorOrderTiempoNoVIP += horasNoVIP;
+//             cantidadOrderNoVIP++;
+//         }
+
+//     for (EstadisticoDelivery delivery : deliveriesStatistics) {
+//         if (delivery.getOrder().getClient().getType() == 1) {
+//             int horasDeliveryVIP = Integer.parseInt(delivery.getHour());
+//             // int minDeliveryVIP = Integer.parseInt(delivery.getHour().split(":")[1]);
+//             contadorTiempoDeliveryVIP += horasDeliveryVIP ;
+//             cantidadDeliveryVIP++;
+//         } else {
+//             int horasDeliveryNoVIP = Integer.parseInt(delivery.getHour());
+//             // int minDeliveryNoVIP = Integer.parseInt(delivery.getHour().split(":")[1]);
+//             contadorDeliveryTiempoNoVIP += horasDeliveryNoVIP;
+//             cantidadDeliveryNoVIP++;
+//         }
+
 }
+    

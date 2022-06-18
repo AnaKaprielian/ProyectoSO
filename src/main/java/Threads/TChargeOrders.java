@@ -17,7 +17,6 @@ public class TChargeOrders implements Runnable{
     public TChargeOrders(List<Order> ordersFromFile){
         this.ordersFromFile = ordersFromFile;
         thread = new Thread(this);
-
         thread.start();
     }
 

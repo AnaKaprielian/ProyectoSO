@@ -6,12 +6,15 @@ import Model.Client;
 import Model.DeliveryMan;
 import Model.Order;
 import Model.Store;
+import Statistics.Statistics;
 import Threads.TChargeOrders;
 import Threads.TClock;
+import Threads.TDeliverOrder;
 import Utils.DataHandler;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Semaphore;
 
 public class SystemP {
     private static List<Store> stores;
@@ -20,6 +23,8 @@ public class SystemP {
     private static SystemP instance;
     private static List<Order> ordersFromFile;
     private static MLQ mlq = MLQ.getInstance();
+    private static Semaphore semaphoreFiles = new Semaphore(0);
+    
 
     public SystemP(List<Store> stores, List<Client> clients, List<DeliveryMan> deliverers, List<Order> ordersFromFile) {
         SystemP.stores = stores;
@@ -55,7 +60,7 @@ public class SystemP {
         }
 
 
-        Queue<Order> orders = DataHandler.getOrdersFromFile("orders");
+        List<Order> orders = DataHandler.getOrdersFromFile("orders");
 
         // TODO: Inicializar reloj contador
         TClock tClock = new TClock();
@@ -63,11 +68,19 @@ public class SystemP {
 
         // TODO: inicializar procesamiento de ordenes
         // 1. Cargar en el MLQ
-        TChargeOrders.getInstance().run();
+        TChargeOrders changeOrders = new TChargeOrders(orders);
+        changeOrders.run();
         // 2. Procesar de ahi
         mlq.run();
 
-        // TOD
+        // inicializar repartidores
+        TDeliverOrder deliveryMan = new TDeliverOrder(null,null);
+        deliveryMan.run();
+
+        //BITACORA
+        semaphoreFiles.acquire();
+        DataHandler.generateBitacoras(Statistics.getInstance().getOrderStatistics(), Statistics.getInstance().getDeliveriesStatistics());
+        
     }
 
     public List<Store> getStores() {

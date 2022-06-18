@@ -5,6 +5,8 @@ import Model.DeliveryMan;
 import Model.Food;
 import Model.Order;
 import Repository.SystemP;
+import Statistics.DeliverStatistic;
+import Statistics.OrderStatistic;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,8 +55,8 @@ public class DataHandler {
         return newDelivery;
     }
 
-    public static Queue<Order> getOrdersFromFile(String fileName) {
-        Queue<Order> orders = new LinkedList();
+    public static List<Order> getOrdersFromFile(String fileName) {
+        List<Order> orders = new LinkedList();
         String[] orderFiles = FilesHandler.readFile(fileName);
         for (String orderFile : orderFiles) {
                 Order order = generateOrderFromFileLine(orderFile);
@@ -65,11 +67,11 @@ public class DataHandler {
 
     public static Order generateOrderFromFileLine(String fileLine) {
         String[] lineSplit = fileLine.split(",");
-        int orderId =  Integer.parseInt(lineSplit[0]);
+        String orderId =  lineSplit[3];
         int arriveTime = Integer.parseInt(lineSplit[1]);
         String orderDescription = lineSplit[2];
         Food newFood = new Food(orderDescription, arriveTime);
-        String clientId = lineSplit[3];
+        String clientId = lineSplit[0];
 
         Client client = systemP.getClients().stream()
                 .filter(client1 -> clientId.equals(client1.getClientId()))
@@ -82,4 +84,46 @@ public class DataHandler {
         }
         return null;
     }
+    
+    public static void generateBitacoras(List<OrderStatistic> ordersStatistics,
+            List<DeliverStatistic> deliverersStatistics) throws InterruptedException {
+                generateBitacoraOrder(ordersStatistics);
+                generateBitacoraDelivery(deliverersStatistics);
+    }
+
+    public static void generateBitacoraOrder(List<OrderStatistic> orderStatistics) throws InterruptedException{
+        String[] fileLines = new String[orderStatistics.size()];
+        int contador = 0;
+        for (OrderStatistic order : orderStatistics) {
+            if (order != null && order.getOrder() != null && order.getOrder().getClient() != null) {
+                String fileLine = "La orden del cliente: " + order.getOrder().getClient().getClientId() + " - Con descripcion " + order.getOrder().getOrderDescription() +
+                        " ingreso en el tiempo: " + order.getOrder().getArriveTime();
+                fileLines[contador] = fileLine;
+                contador++;
+            }
+        }
+        FilesHandler.writeFile("BitacoraOrder", fileLines);
+    }
+
+
+    
+    public static void generateBitacoraDelivery(List<DeliverStatistic> deliveriesStatistics) throws InterruptedException {
+
+        String[] fileLines = new String[deliveriesStatistics.size()];
+        int contador = 0;
+        for (DeliverStatistic delivery : deliveriesStatistics) {
+            if (delivery != null && delivery.getOrder().getClient() != null && delivery.getDelivery() != null) {
+                String fileLine = "El repartidor: " + delivery.getDelivery().getDeliveryManId()
+                        + " entregó la orden del Cliente: " + delivery.getOrder().getClient(). getClientId()
+                        + " en el tiempo: " + delivery.getDeliveryTime();
+                fileLines[contador] = fileLine;
+            }
+
+            contador++;
+        }
+
+        FilesHandler.writeFile("BitacoraDelivery",fileLines);
+       
+    }
+    
 }

@@ -27,6 +27,7 @@ public class FCFSDelivery {
 
             DeliveryMan delivery = deliverys.poll();
 
+
             return delivery;
         }
 
@@ -43,7 +44,6 @@ public class FCFSDelivery {
                 return newDelivery;
             }
             return null;
-
         }
     }
 

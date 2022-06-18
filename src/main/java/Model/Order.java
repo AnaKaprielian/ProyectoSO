@@ -1,23 +1,23 @@
 package Model;
 
 public class Order {
-    private int orderId;
+    private String orderId;
     private int arriveTime;
     private Food orderDescription;
     private Client client;
 
-    public Order(int orderId, int arriveTime, Food orderDescription, Client client) {
+    public Order(String orderId, int arriveTime, Food orderDescription, Client client) {
         this.orderId = orderId;
         this.arriveTime = arriveTime;
         this.orderDescription = orderDescription;
         this.client = client;
     }
 
-    public int getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(int orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 

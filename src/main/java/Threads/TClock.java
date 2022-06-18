@@ -32,6 +32,7 @@ public class TClock implements Runnable {
                 counter.getAndIncrement();
             }
             setFlag(flag);
+
         }
 
     public static boolean isFlag() {
