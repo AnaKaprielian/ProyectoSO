@@ -25,7 +25,7 @@ public class MLQ extends Thread {
     private Semaphore slowSemaphoreIn = new Semaphore(1);
     private Semaphore deliverySemaphoreIn = new Semaphore(1);
     private static Semaphore startSeg = new Semaphore(0);
-    private static Semaphore mutex = new Semaphore(2);
+    private static Semaphore mutex = new Semaphore(1);
     private FCFSOrder[] queuesPlanner = {
             vipOrders, fastFoodOrders, mediumFoodOrders, slowFoodOrders
     };
@@ -35,10 +35,11 @@ public class MLQ extends Thread {
     private final Semaphore order = new Semaphore(0);
 
     public static void addOrder(Order order) throws InterruptedException {
-        mutex.acquire();
+
         int serviceTime = order.getOrderDescription().getServiceTime();
         int vipNumber = order.getClient().getClientType();
         if (vipNumber == 1) {
+
             vipOrders.push(order);
         } else {
             if (serviceTime < 20) {
@@ -50,7 +51,7 @@ public class MLQ extends Thread {
                 slowFoodOrders.push(order);
             }
         }
-        mutex.release();
+
         // DataHandler.release();
     }
 

@@ -6,15 +6,15 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
-
-
 public class FCFSOrder {
     private Queue<Order> orders = new LinkedList<>();
     private Semaphore mutex = new Semaphore(1);
 
     public void push(Order order) throws InterruptedException {
         mutex.acquire();
-        orders.add(order);
+        if (!orders.contains(order)) {
+            orders.add(order);
+        }
         mutex.release();
     }
 

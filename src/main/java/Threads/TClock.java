@@ -42,7 +42,7 @@ public class TClock extends Thread {
             TChargeOrders.releaseSeg();
             try {
                 semTClockMLQ.acquire();
-                semTClockOrder.acquire();
+                // semTClockOrder.acquire();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

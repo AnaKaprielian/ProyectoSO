@@ -31,21 +31,22 @@ public class TChargeOrders extends Thread {
             try {
                 startSeg.acquire();
                 long moment = TClock.getMoment();
-                while (ordersFromFile.size() > 0) {
-                    for (int index = 0; index < ordersFromFile.size(); index++) {
-                        if (ordersFromFile.get(index).getArriveTime() <= moment) {
-                            try {
-                                mlqAdd.acquire();
-                                MLQ.addOrder(ordersFromFile.get(index));
-                                ordersFromFile.remove(ordersFromFile.get(index));
-                                mlqAdd.release();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                mlqAdd.acquire();
+                for (int index = 0; index < ordersFromFile.size(); index++) {
+                    if (ordersFromFile.get(index).getArriveTime() <= moment) {
+                        try {
+                            MLQ.addOrder(ordersFromFile.get(index));
+                            ordersFromFile.remove(ordersFromFile.get(index));
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
+                    } else {
+                        break;
                     }
-                    ordersFromFile.clear();
                 }
+                mlqAdd.release();
+
             } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();

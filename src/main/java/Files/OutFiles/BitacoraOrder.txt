@@ -5,3 +5,5 @@ La orden del cliente: C1 - Con descripcion Food{description='Asado', serviceTime
 La orden del cliente: C1 - Con descripcion Food{description='Asado', serviceTime=1} ingreso en el tiempo: 1
 La orden del cliente: C3 - Con descripcion Food{description='Empanada', serviceTime=2} ingreso en el tiempo: 2
 La orden del cliente: C3 - Con descripcion Food{description='Empanada', serviceTime=2} ingreso en el tiempo: 2
+La orden del cliente: C1 - Con descripcion Food{description='Asado', serviceTime=1} ingreso en el tiempo: 1
+La orden del cliente: C3 - Con descripcion Food{description='Empanada', serviceTime=2} ingreso en el tiempo: 2
