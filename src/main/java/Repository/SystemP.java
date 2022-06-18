@@ -12,6 +12,7 @@ import Threads.TClock;
 import Threads.TDeliverOrder;
 import Utils.DataHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
@@ -20,67 +21,82 @@ public class SystemP {
     private static List<Store> stores;
     private static List<Client> clients;
     private static List<DeliveryMan> deliverers;
-    private static SystemP instance;
+
+    private static List<Thread> threadsStop = new ArrayList<>();
+
     private static List<Order> ordersFromFile;
-    private static MLQ mlq = MLQ.getInstance();
     private static Semaphore semaphoreFiles = new Semaphore(0);
-    
 
     public SystemP(List<Store> stores, List<Client> clients, List<DeliveryMan> deliverers, List<Order> ordersFromFile) {
-        SystemP.stores = stores;
-        SystemP.clients = clients;
-        SystemP.deliverers = deliverers;
-        SystemP.ordersFromFile = ordersFromFile;
+        this.stores = stores;
+        this.clients = clients;
+        this.deliverers = deliverers;
+        this.ordersFromFile = ordersFromFile;
     }
 
     public SystemP() {
 
     }
 
-    public static SystemP getInstance() {
-        if (instance == null) {
-            instance = new SystemP();
-        }
-        return instance;
+    public static void realeaseFiles() {
+        semaphoreFiles.release();
     }
 
+    private static Semaphore semOrder = new Semaphore(0);
+    private static Semaphore semDelivery = new Semaphore(0);
+    private static Semaphore semClient = new Semaphore(0);
 
-    public void initDayOfWork(int i) throws InterruptedException {
+    public static void semOrderRelease() {
+        semOrder.release();
+    }
 
+    public static void semDeliveryRealease() {
+        semDelivery.release();
+    }
+
+    public static void semClientRelease() {
+        semClient.release();
+    }
+
+    public static void initDayOfWork(int i) throws InterruptedException {
 
         List<Client> clients = DataHandler.getClientsFromFile("clients");
-        this.setClients(clients);
+        setClients(clients);
+
+        semClient.acquire();
 
         List<DeliveryMan> deliverers = DataHandler.getDeliverersFromFile("deliverers");
-        this.setDeliverers(deliverers);
-
+        setDeliverers(deliverers);
+        semDelivery.acquire();
 
         for (DeliveryMan delivery : deliverers) {
-            FCFSDelivery.getInstance().push(delivery);
+            FCFSDelivery.push(delivery);
         }
 
-
         List<Order> orders = DataHandler.getOrdersFromFile("orders");
-
+        semOrder.acquire();
         // TODO: Inicializar reloj contador
         TClock tClock = new TClock();
-        tClock.run();
+        tClock.start();
 
         // TODO: inicializar procesamiento de ordenes
         // 1. Cargar en el MLQ
         TChargeOrders changeOrders = new TChargeOrders(orders);
-        changeOrders.run();
+        changeOrders.start();
         // 2. Procesar de ahi
-        mlq.run();
+        MLQ mlq = new MLQ();
+        mlq.start();
 
         // inicializar repartidores
-        TDeliverOrder deliveryMan = new TDeliverOrder(null,null);
-        deliveryMan.run();
+        // TDeliverOrder deliveryMan = new TDeliverOrder(null, null);
+        // deliveryMan.start();
 
-        //BITACORA
+        // BITACORA
         semaphoreFiles.acquire();
-        DataHandler.generateBitacoras(Statistics.getInstance().getOrderStatistics(), Statistics.getInstance().getDeliveriesStatistics());
-        
+
+        DataHandler.generateBitacoras(Statistics.getInstance().getOrderStatistics(),
+                Statistics.getInstance().getDeliveriesStatistics());
+
     }
 
     public List<Store> getStores() {
@@ -88,26 +104,34 @@ public class SystemP {
     }
 
     public void setStores(List<Store> stores) {
-        this.stores = stores;
+        SystemP.stores = stores;
     }
 
-    public List<Client> getClients() {
+    public static List<Client> getClients() {
         return clients;
     }
 
-    public void setClients(List<Client> clients) {
-        this.clients = clients;
-    }
-
-    public static void setInstance(SystemP instance) {
-        SystemP.instance = instance;
+    public static void setClients(List<Client> clients) {
+        SystemP.clients = clients;
     }
 
     public List<DeliveryMan> getDeliverers() {
         return deliverers;
     }
 
-    public void setDeliverers(List<DeliveryMan> deliverers) {
-        this.deliverers = deliverers;
+    public static void setDeliverers(List<DeliveryMan> deliverers) {
+        SystemP.deliverers = deliverers;
+    }
+
+    public static void hilos(Thread newThread) {
+        threadsStop.add(newThread);
+    }
+
+    public static void hilosDelete() {
+        for (Thread hilo : threadsStop) {
+            if (hilo != null) {
+                hilo.stop();
+            }
+        }
     }
 }

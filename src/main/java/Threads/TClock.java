@@ -1,39 +1,65 @@
 package Threads;
 
+import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class TClock implements Runnable {
+import Model.Order;
+import Repository.SystemP;
+
+public class TClock extends Thread {
     Thread thread;
-    AtomicLong counter = new AtomicLong(1);
-    public static TClock instance;
+    static AtomicLong counter = new AtomicLong(1);
     public static boolean flag;
 
-    public TClock(){
+    private static Semaphore semTClock = new Semaphore(0);
+    private static Semaphore semTClockOrder = new Semaphore(0);
+    private static Semaphore semTClockMLQ = new Semaphore(0);
+
+    public TClock() {
         thread = new Thread(this);
-        thread.start();
         flag = true;
     }
 
-    public static TClock getInstance() {
-        if (instance == null) {
-            instance = new TClock();
-        }
-        return instance;
+    public static long getMoment() {
+        return counter.get();
     }
 
-    public long getMoment() {
-        return counter.get();
+    public static void releaseOrder() {
+        semTClockOrder.release();
+    }
+
+    public static void releaseMLQ() {
+        semTClockMLQ.release();
     }
 
     @Override
     public void run() {
-            while (counter.get() < 400){
+        while (counter.get() < 200) {
 
-                counter.getAndIncrement();
+            counter.getAndIncrement();
+            MLQ.MLQ.releaseSemIn();
+            TChargeOrders.releaseSeg();
+            try {
+                semTClockMLQ.acquire();
+                semTClockOrder.acquire();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            setFlag(flag);
 
+            // try {
+            // // Thread.sleep(100);
+            // } catch (InterruptedException e) {
+            // e.printStackTrace();
+            // }
         }
+        System.out.println("aca");
+        SystemP.realeaseFiles();
+        SystemP.hilosDelete();
+        // setFlag(false);
+
+    }
 
     public static boolean isFlag() {
         return flag;
@@ -41,5 +67,9 @@ public class TClock implements Runnable {
 
     public static void setFlag(boolean flag) {
         TClock.flag = flag;
+    }
+
+    public static void realeaseTClock() {
+        semTClock.release();
     }
 }

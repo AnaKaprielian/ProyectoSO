@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 public class DataHandler {
 
-    public static SystemP systemP = SystemP.getInstance();
-
-    public DataHandler(){
+    public DataHandler() {
 
     }
+
     public static List<Client> getClientsFromFile(String fileName) {
         List<Client> clients = new ArrayList<>();
         String[] userFiles = FilesHandler.readFile(fileName);
@@ -28,7 +28,9 @@ public class DataHandler {
             Client client = generateClientFromFileLine(userFile);
             clients.add(client);
         }
+        SystemP.semClientRelease();
         return clients;
+
     }
 
     public static Client generateClientFromFileLine(String fileLine) {
@@ -36,7 +38,9 @@ public class DataHandler {
         String id = lineSplit[0];
         int type = Integer.parseInt(lineSplit[1]);
         Client newClient = new Client(id, type);
+
         return newClient;
+
     }
 
     public static List<DeliveryMan> getDeliverersFromFile(String fileName) {
@@ -46,6 +50,7 @@ public class DataHandler {
             DeliveryMan delivery = generateDeliveryFromFileLine(deliveryFile);
             deliverys.add(delivery);
         }
+        SystemP.semDeliveryRealease();
         return deliverys;
     }
 
@@ -59,44 +64,48 @@ public class DataHandler {
         List<Order> orders = new LinkedList();
         String[] orderFiles = FilesHandler.readFile(fileName);
         for (String orderFile : orderFiles) {
-                Order order = generateOrderFromFileLine(orderFile);
-                orders.add(order);
+            Order order = generateOrderFromFileLine(orderFile);
+            orders.add(order);
         }
+        SystemP.semOrderRelease();
         return orders;
+
     }
 
     public static Order generateOrderFromFileLine(String fileLine) {
         String[] lineSplit = fileLine.split(",");
-        String orderId =  lineSplit[3];
+        String orderId = lineSplit[0];
         int arriveTime = Integer.parseInt(lineSplit[1]);
         String orderDescription = lineSplit[2];
         Food newFood = new Food(orderDescription, arriveTime);
-        String clientId = lineSplit[0];
+        String clientId = lineSplit[3];
 
-        Client client = systemP.getClients().stream()
+        Client client = SystemP.getClients().stream()
                 .filter(client1 -> clientId.equals(client1.getClientId()))
                 .collect(Collectors.toList())
                 .get(0);
 
-        if (client != null){
+        if (client != null) {
             Order newOrder = new Order(orderId, arriveTime, newFood, client);
             return newOrder;
         }
         return null;
     }
-    
+
     public static void generateBitacoras(List<OrderStatistic> ordersStatistics,
             List<DeliverStatistic> deliverersStatistics) throws InterruptedException {
-                generateBitacoraOrder(ordersStatistics);
-                generateBitacoraDelivery(deliverersStatistics);
+        generateBitacoraOrder(ordersStatistics);
+        generateBitacoraDelivery(deliverersStatistics);
+
     }
 
-    public static void generateBitacoraOrder(List<OrderStatistic> orderStatistics) throws InterruptedException{
+    public static void generateBitacoraOrder(List<OrderStatistic> orderStatistics) throws InterruptedException {
         String[] fileLines = new String[orderStatistics.size()];
         int contador = 0;
         for (OrderStatistic order : orderStatistics) {
             if (order != null && order.getOrder() != null && order.getOrder().getClient() != null) {
-                String fileLine = "La orden del cliente: " + order.getOrder().getClient().getClientId() + " - Con descripcion " + order.getOrder().getOrderDescription() +
+                String fileLine = "La orden del cliente: " + order.getOrder().getClient().getClientId()
+                        + " - Con descripcion " + order.getOrder().getOrderDescription() +
                         " ingreso en el tiempo: " + order.getOrder().getArriveTime();
                 fileLines[contador] = fileLine;
                 contador++;
@@ -105,16 +114,15 @@ public class DataHandler {
         FilesHandler.writeFile("BitacoraOrder", fileLines);
     }
 
-
-    
-    public static void generateBitacoraDelivery(List<DeliverStatistic> deliveriesStatistics) throws InterruptedException {
+    public static void generateBitacoraDelivery(List<DeliverStatistic> deliveriesStatistics)
+            throws InterruptedException {
 
         String[] fileLines = new String[deliveriesStatistics.size()];
         int contador = 0;
         for (DeliverStatistic delivery : deliveriesStatistics) {
             if (delivery != null && delivery.getOrder().getClient() != null && delivery.getDelivery() != null) {
                 String fileLine = "El repartidor: " + delivery.getDelivery().getDeliveryManId()
-                        + " entregó la orden del Cliente: " + delivery.getOrder().getClient(). getClientId()
+                        + " entregó la orden del Cliente: " + delivery.getOrder().getClient().getClientId()
                         + " en el tiempo: " + delivery.getDeliveryTime();
                 fileLines[contador] = fileLine;
             }
@@ -122,8 +130,8 @@ public class DataHandler {
             contador++;
         }
 
-        FilesHandler.writeFile("BitacoraDelivery",fileLines);
-       
+        FilesHandler.writeFile("BitacoraDelivery", fileLines);
+
     }
-    
+
 }

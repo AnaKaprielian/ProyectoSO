@@ -1,7 +1,7 @@
-C1,1,Asado,1
-C2,1,Hamburguesa,2
-C3,2,Empanada,3
-C4,3,Pizza,4
-C5,3,Pizza,5
-C6,4,Empanada,6
-C7,4,Asado,7
+O1,1,Asado,C1
+O2,1,Hamburguesa,C2
+O3,2,Empanada,C3
+O4,3,Pizza,C4
+O5,3,Pizza,C5
+O6,4,Empanada,C6
+O7,4,Asado,C7
