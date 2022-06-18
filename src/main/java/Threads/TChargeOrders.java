@@ -31,7 +31,7 @@ public class TChargeOrders extends Thread {
             try {
                 startSeg.acquire();
                 long moment = TClock.getMoment();
-                mlqAdd.acquire();
+                // mlqAdd.acquire();
                 for (int index = 0; index < ordersFromFile.size(); index++) {
                     if (ordersFromFile.get(index).getArriveTime() <= moment) {
                         try {
@@ -42,16 +42,17 @@ public class TChargeOrders extends Thread {
                             e.printStackTrace();
                         }
                     } else {
+                        TClock.releaseOrder();
                         break;
                     }
+                    TClock.releaseOrder();
                 }
-                mlqAdd.release();
+                // mlqAdd.release();
 
             } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            TClock.releaseOrder();
 
         }
     }

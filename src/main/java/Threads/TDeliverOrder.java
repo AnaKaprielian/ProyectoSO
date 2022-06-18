@@ -21,16 +21,34 @@ public class TDeliverOrder extends Thread {
 
     }
 
+    public int timeDeliver() {
+        int max;
+        int min;
+        int range;
+        int timeDeliver;
+        int finalDeliver;
+        if (order.getClient().getClientType() == 0) {
+            max = 1000;
+            min = 100;
+            range = max - min + 1;
+            timeDeliver = (int) (Math.random() * range);
+        } else {
+            max = 100;
+            min = 0;
+            range = max - min + 1;
+            timeDeliver = (int) (Math.random() * range);
+        }
+
+        return timeDeliver;
+    }
+
     @Override
     public void run() {
-        int max = 40;
-        int min = 1;
-        int range = max - min + 1;
         int finalDeliver = 0;
-
+        int timeDeliver;
         while (deliveryMan.getDeliveryBoolean()) {
             SystemP.hilos(this);
-            int timeDeliver = (int) (Math.random() * range);
+            timeDeliver = timeDeliver();
             while (finalDeliver < timeDeliver) {
                 finalDeliver++;
             }

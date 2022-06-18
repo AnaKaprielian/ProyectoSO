@@ -35,14 +35,14 @@ public class TClock extends Thread {
 
     @Override
     public void run() {
-        while (counter.get() < 200) {
+        while (counter.get() < 20) {
 
             counter.getAndIncrement();
             MLQ.MLQ.releaseSemIn();
             TChargeOrders.releaseSeg();
             try {
                 semTClockMLQ.acquire();
-                // semTClockOrder.acquire();
+                semTClockOrder.acquire();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
