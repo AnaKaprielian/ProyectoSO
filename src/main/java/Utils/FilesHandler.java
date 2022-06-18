@@ -33,6 +33,7 @@ public class FilesHandler {
 
         String path = "src/main/java/Files/OutFiles/";
         File archivo = new File(path + fileName + ".txt");
+        archivo.delete();
         FileWriter fw;
         try {
             fw = new FileWriter(archivo, true);

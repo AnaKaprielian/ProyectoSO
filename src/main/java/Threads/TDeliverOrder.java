@@ -1,6 +1,7 @@
 package Threads;
 
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
 import MLQ.FCFSDelivery;
@@ -13,12 +14,12 @@ public class TDeliverOrder extends Thread {
     Thread thread;
     private DeliveryMan deliveryMan;
     private Order order;
+    private static Semaphore statistics = new Semaphore(1);
 
     public TDeliverOrder(DeliveryMan deliveryMan, Order order) {
         thread = new Thread(this);
         this.deliveryMan = deliveryMan;
         this.order = order;
-
     }
 
     public int timeDeliver() {
@@ -44,20 +45,21 @@ public class TDeliverOrder extends Thread {
 
     @Override
     public void run() {
-        int finalDeliver = 0;
-        int timeDeliver;
-        while (deliveryMan.getDeliveryBoolean()) {
-            SystemP.hilos(this);
-            timeDeliver = timeDeliver();
-            while (finalDeliver < timeDeliver) {
-                finalDeliver++;
-            }
+        long finalDeliver = 0;
+        long timeDeliver;
+        long endProcessedTime = TClock.getMoment();
+        timeDeliver = timeDeliver();
+        while (finalDeliver < timeDeliver) {
+            finalDeliver++;
+        }
+        try {
+            statistics.acquire();
             FCFSDelivery.push(deliveryMan);
-            try {
-                Statistics.addDeliveryToStatistics(deliveryMan, order, timeDeliver);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            Statistics.addDeliveryToStatistics(deliveryMan, order, (timeDeliver + endProcessedTime));
+            statistics.release();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
     }

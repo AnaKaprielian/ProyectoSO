@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
+import MLQ.MLQ;
 import Model.Order;
 import Repository.SystemP;
 
@@ -35,29 +36,21 @@ public class TClock extends Thread {
 
     @Override
     public void run() {
-        while (counter.get() < 20) {
-
+        while (counter.get() < 50000) {
             counter.getAndIncrement();
-            MLQ.MLQ.releaseSemIn();
             TChargeOrders.releaseSeg();
+            MLQ.releaseSemIn();
             try {
                 semTClockMLQ.acquire();
-                semTClockOrder.acquire();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
-            // try {
-            // // Thread.sleep(100);
-            // } catch (InterruptedException e) {
-            // e.printStackTrace();
-            // }
         }
         System.out.println("aca");
         SystemP.realeaseFiles();
-        SystemP.hilosDelete();
-        // setFlag(false);
+        // SystemP.hilosDelete();
+        setFlag(false);
 
     }
 

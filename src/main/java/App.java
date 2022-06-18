@@ -9,6 +9,6 @@ public class App {
     public static void main(String[] args) throws InterruptedException {
 
         SystemP.initDayOfWork(1);
-
+        System.exit(0);
     }
 }

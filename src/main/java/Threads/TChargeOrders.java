@@ -27,7 +27,6 @@ public class TChargeOrders extends Thread {
     public void run() {
 
         while (TClock.isFlag()) {
-            SystemP.hilos(this);
             try {
                 startSeg.acquire();
                 long moment = TClock.getMoment();
@@ -47,8 +46,6 @@ public class TChargeOrders extends Thread {
                     }
                     TClock.releaseOrder();
                 }
-                // mlqAdd.release();
-
             } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();

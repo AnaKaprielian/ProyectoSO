@@ -26,6 +26,7 @@ public class SystemP {
 
     private static List<Order> ordersFromFile;
     private static Semaphore semaphoreFiles = new Semaphore(0);
+    private static Semaphore semaphoreDelivery = new Semaphore(1);
 
     public SystemP(List<Store> stores, List<Client> clients, List<DeliveryMan> deliverers, List<Order> ordersFromFile) {
         this.stores = stores;
@@ -52,6 +53,14 @@ public class SystemP {
 
     public static void semDeliveryRealease() {
         semDelivery.release();
+    }
+
+    public static void semDeliveryPushRel() {
+        semaphoreDelivery.release();
+    }
+
+    public static void semDeliveryPushAqu() throws InterruptedException {
+        semaphoreDelivery.acquire();
     }
 
     public static void semClientRelease() {
@@ -83,19 +92,23 @@ public class SystemP {
         // 1. Cargar en el MLQ
         TChargeOrders changeOrders = new TChargeOrders(orders);
         changeOrders.start();
+
         // 2. Procesar de ahi
         MLQ mlq = new MLQ();
         mlq.start();
 
-        // inicializar repartidores
-        // TDeliverOrder deliveryMan = new TDeliverOrder(null, null);
-        // deliveryMan.start();
-
         // BITACORA
         semaphoreFiles.acquire();
 
-        DataHandler.generateBitacoras(Statistics.getInstance().getOrderStatistics(),
-                Statistics.getInstance().getDeliveriesStatistics());
+        Statistics.getInstance();
+
+        DataHandler.generateBitacoras(Statistics.getOrderStatistics(),
+                Statistics.getDeliveriesStatistics());
+
+        System.out.println(Statistics.getDeliveriesStatistics().size());
+
+        DataHandler.generateKPIs(Statistics.getOrderStatistics(),
+                Statistics.getDeliveriesStatistics());
 
     }
 
@@ -123,15 +136,4 @@ public class SystemP {
         SystemP.deliverers = deliverers;
     }
 
-    public static void hilos(Thread newThread) {
-        threadsStop.add(newThread);
-    }
-
-    public static void hilosDelete() {
-        for (Thread hilo : threadsStop) {
-            if (hilo != null) {
-                hilo.stop();
-            }
-        }
-    }
 }

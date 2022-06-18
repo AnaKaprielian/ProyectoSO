@@ -7,9 +7,9 @@ public class DeliverStatistic {
 
     private DeliveryMan delivery;
     private Order order;
-    private int deliveryTime;
+    private long deliveryTime;
 
-    public DeliverStatistic(DeliveryMan delivery, Order order, int deliveryTime) {
+    public DeliverStatistic(DeliveryMan delivery, Order order, long deliveryTime) {
         this.delivery = delivery;
         this.order = order;
         this.deliveryTime = deliveryTime;
@@ -31,7 +31,7 @@ public class DeliverStatistic {
         this.order = order;
     }
 
-    public int getDeliveryTime() {
+    public long getDeliveryTime() {
         return deliveryTime;
     }
 
