@@ -36,7 +36,7 @@ public class TClock extends Thread {
 
     @Override
     public void run() {
-        while (counter.get() < 50000) {
+        while (counter.get() < 100000) {
             counter.getAndIncrement();
             TChargeOrders.releaseSeg();
             MLQ.releaseSemIn();

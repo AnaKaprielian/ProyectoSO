@@ -1,29 +1,29 @@
 VELOCIDAD PROCESAMIENTO DE ORDENES DE CLIENTES VIPS VS NO-VIPS
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 270
-Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 247
+Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 274
+Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 255
 VEL. procesamiento VIPS > VEL. procesamiento NO-VIPS -> false
 
 ----------------------------------------------
 
 VELOCIDAD PROCESAMIENTO DE ORDENES FAST/MED/SLOW
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 273
-Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 289
-Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 255
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 276
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 292
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 259
 VEL. procesamiento FAST > MED > SLOW  (VIP) -> false
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 248
-Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 239
-Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 244
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 253
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 246
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 253
 VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> false
 
 ----------------------------------------------
 
 VELOCIDAD ENTREGA - ORDENES VIPS VS NO VIPS
 
-Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 815
-Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 1423
+Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 810
+Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 1383
 VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> true
 
 ----------------------------------------------
