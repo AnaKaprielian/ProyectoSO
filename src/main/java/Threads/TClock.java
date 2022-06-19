@@ -12,11 +12,12 @@ public class TClock extends Thread {
     Thread thread;
     static AtomicLong counter = new AtomicLong(1);
     public static boolean flag;
-
+    
     private static Semaphore semTClock = new Semaphore(0);
     private static Semaphore semTClockOrder = new Semaphore(0);
     private static Semaphore semTClockMLQ = new Semaphore(0);
-
+    public static Semaphore semSyncStore = new Semaphore(0);
+    
     public TClock() {
         thread = new Thread(this);
         flag = true;
@@ -36,10 +37,12 @@ public class TClock extends Thread {
 
     @Override
     public void run() {
-        while (counter.get() < 100000) {
+        while (counter.get() < 200000) {
             counter.getAndIncrement();
+            // System.out.println("PEPITO "  + counter.get());
             TChargeOrders.releaseSeg();
             MLQ.releaseSemIn();
+            semSyncStore.release();
             try {
                 semTClockMLQ.acquire();
             } catch (InterruptedException e) {
@@ -47,8 +50,8 @@ public class TClock extends Thread {
                 e.printStackTrace();
             }
         }
-        System.out.println("aca");
-        SystemP.realeaseFiles();
+        
+        SystemP.releaseFiles();
         // SystemP.hilosDelete();
         setFlag(false);
 
@@ -62,7 +65,7 @@ public class TClock extends Thread {
         TClock.flag = flag;
     }
 
-    public static void realeaseTClock() {
+    public static void TClock() {
         semTClock.release();
     }
 }

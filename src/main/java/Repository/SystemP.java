@@ -5,8 +5,8 @@ import MLQ.MLQ;
 import Model.Client;
 import Model.DeliveryMan;
 import Model.Order;
-import Model.Store;
 import Statistics.Statistics;
+import Threads.TStore;
 import Threads.TChargeOrders;
 import Threads.TClock;
 import Threads.TDeliverOrder;
@@ -18,7 +18,7 @@ import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
 public class SystemP {
-    private static List<Store> stores;
+    private static List<TStore> stores;
     private static List<Client> clients;
     private static List<DeliveryMan> deliverers;
 
@@ -27,8 +27,11 @@ public class SystemP {
     private static List<Order> ordersFromFile;
     private static Semaphore semaphoreFiles = new Semaphore(0);
     private static Semaphore semaphoreDelivery = new Semaphore(1);
+    private static Semaphore semOrder = new Semaphore(0);
+    private static Semaphore semDelivery = new Semaphore(0);
+    private static Semaphore semClient = new Semaphore(0);
 
-    public SystemP(List<Store> stores, List<Client> clients, List<DeliveryMan> deliverers, List<Order> ordersFromFile) {
+    public SystemP(List<TStore> stores, List<Client> clients, List<DeliveryMan> deliverers, List<Order> ordersFromFile) {
         this.stores = stores;
         this.clients = clients;
         this.deliverers = deliverers;
@@ -39,13 +42,10 @@ public class SystemP {
 
     }
 
-    public static void realeaseFiles() {
+    public static void releaseFiles() {
         semaphoreFiles.release();
     }
 
-    private static Semaphore semOrder = new Semaphore(0);
-    private static Semaphore semDelivery = new Semaphore(0);
-    private static Semaphore semClient = new Semaphore(0);
 
     public static void semOrderRelease() {
         semOrder.release();
@@ -69,20 +69,26 @@ public class SystemP {
 
     public static void initDayOfWork(int i) throws InterruptedException {
 
+        System.out.println("Cargando clientes...");
         List<Client> clients = DataHandler.getClientsFromFile("clients");
         setClients(clients);
-
+        System.out.println("Se cargaron: " + clients.size() + " clientes");
         semClient.acquire();
 
+        System.out.println("Cargando repartidores...");
         List<DeliveryMan> deliverers = DataHandler.getDeliverersFromFile("deliverers");
         setDeliverers(deliverers);
+        System.out.println("Se cargaron: " + deliverers.size() + " repartidores");
+
         semDelivery.acquire();
 
         for (DeliveryMan delivery : deliverers) {
             FCFSDelivery.push(delivery);
         }
 
+        System.out.println("Cargando ordenes...");
         List<Order> orders = DataHandler.getOrdersFromFile("orders");
+        System.out.println("Se han cargado: " + orders.size() + " ordenes");
         semOrder.acquire();
         // TODO: Inicializar reloj contador
         TClock tClock = new TClock();
@@ -93,6 +99,8 @@ public class SystemP {
         TChargeOrders changeOrders = new TChargeOrders(orders);
         changeOrders.start();
 
+        TStore store = new TStore(1, "Pepito", null, null);
+        store.start();
         // 2. Procesar de ahi
         MLQ mlq = new MLQ();
         mlq.start();
@@ -105,18 +113,19 @@ public class SystemP {
         DataHandler.generateBitacoras(Statistics.getOrderStatistics(),
                 Statistics.getDeliveriesStatistics());
 
-        System.out.println(Statistics.getDeliveriesStatistics().size());
 
         DataHandler.generateKPIs(Statistics.getOrderStatistics(),
                 Statistics.getDeliveriesStatistics());
 
+        System.out.println("Se ha finalizado la ejecucion");
+
     }
 
-    public List<Store> getStores() {
+    public List<TStore> getStores() {
         return stores;
     }
 
-    public void setStores(List<Store> stores) {
+    public void setStores(List<TStore> stores) {
         SystemP.stores = stores;
     }
 

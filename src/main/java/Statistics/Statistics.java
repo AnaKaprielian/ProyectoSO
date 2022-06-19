@@ -33,9 +33,7 @@ public class Statistics {
             throws InterruptedException {
         semDeliveryStatistic.acquire();
         DeliverStatistic deliveryModel = new DeliverStatistic(delivery, order, deliveryTime);
-        if (deliveriesStatistics.size() > 330) {
-            System.out.println("vino");
-        }
+        
         deliveriesStatistics.add(deliveryModel);
         semDeliveryStatistic.release();
     }

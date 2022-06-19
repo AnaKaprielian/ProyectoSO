@@ -15,7 +15,7 @@ public class TChargeOrders extends Thread {
     private static Semaphore mlqAdd = new Semaphore(1);
 
     public TChargeOrders(List<Order> ordersFromFile) {
-        this.ordersFromFile = ordersFromFile;
+        TChargeOrders.ordersFromFile = ordersFromFile;
         thread = new Thread(this);
     }
 
@@ -41,13 +41,12 @@ public class TChargeOrders extends Thread {
                             e.printStackTrace();
                         }
                     } else {
-                        TClock.releaseOrder();
+                        
                         break;
                     }
-                    TClock.releaseOrder();
                 }
+                TClock.releaseOrder();
             } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 

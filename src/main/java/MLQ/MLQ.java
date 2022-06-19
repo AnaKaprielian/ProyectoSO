@@ -4,6 +4,7 @@ import Model.DeliveryMan;
 import Model.Order;
 import Repository.SystemP;
 import Statistics.Statistics;
+import Threads.TStore;
 import Threads.TClock;
 import Threads.TDeliverOrder;
 
@@ -18,18 +19,18 @@ public class MLQ extends Thread {
     private static FCFSOrder fastFoodOrders = new FCFSOrder();
     private static FCFSOrder mediumFoodOrders = new FCFSOrder();
     private static FCFSOrder slowFoodOrders = new FCFSOrder();
-    private static Queue<Order> vipOrdersReady = new LinkedList<>();
-    private static Queue<Order> fastFoodOrdersReady = new LinkedList<>();
-    private static Queue<Order> mediumFoodOrdersReady = new LinkedList<>();
-    private static Queue<Order> slowFoodOrdersReady = new LinkedList<>();
+    public static Queue<Order> vipOrdersReady = new LinkedList<>();
+    public static Queue<Order> fastFoodOrdersReady = new LinkedList<>();
+    public static Queue<Order> mediumFoodOrdersReady = new LinkedList<>();
+    public static Queue<Order> slowFoodOrdersReady = new LinkedList<>();
     private Semaphore vipSemaphore = new Semaphore(0);
     private Semaphore fastSemaphore = new Semaphore(0);
     private Semaphore mediumSemaphore = new Semaphore(0);
     private Semaphore slowSemaphore = new Semaphore(0);
-    private Semaphore vipSemaphoreReady = new Semaphore(1);
-    private Semaphore fastSemaphoreReady = new Semaphore(1);
-    private Semaphore mediumSemaphoreReady = new Semaphore(1);
-    private Semaphore slowSemaphoreReady = new Semaphore(1);
+    public static Semaphore vipSemaphoreReady = new Semaphore(1);
+    public static Semaphore fastSemaphoreReady = new Semaphore(1);
+    public static Semaphore mediumSemaphoreReady = new Semaphore(1);
+    public static Semaphore slowSemaphoreReady = new Semaphore(1);
     private Semaphore vipSemaphoreIn = new Semaphore(1);
     private Semaphore fastSemaphoreIn = new Semaphore(1);
     private Semaphore mediumSemaphoreIn = new Semaphore(1);
@@ -169,7 +170,7 @@ public class MLQ extends Thread {
 
     @Override
     public void run() {
-        // while (TClock.getMoment() < 1000) {
+        
         while (TClock.isFlag()) {
             try {
                 startSeg.acquire();
@@ -177,40 +178,36 @@ public class MLQ extends Thread {
                     vipSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(vipOrders);
                     if (order != null) {
-                        this.processVipOrder(order);
-                        vipSemaphore.acquire();
-                        vipOrdersReady.add(order);
+                        TStore.acceptOrder(order);
                     }
                     vipSemaphoreIn.release();
+                    TClock.releaseMLQ();
                 } else if (!fastFoodOrders.isEmpty()) {
                     fastSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(fastFoodOrders);
                     if (order != null) {
-                        this.processFastOrder(order);
-                        fastSemaphore.acquire();
-                        fastFoodOrdersReady.add(order);
+                        TStore.acceptOrder(order);
                     }
                     fastSemaphoreIn.release();
+                    TClock.releaseMLQ();
 
                 } else if (!mediumFoodOrders.isEmpty()) {
                     mediumSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(mediumFoodOrders);
                     if (order != null) {
-                        this.processMediumOrder(order);
-                        mediumSemaphore.acquire();
-                        mediumFoodOrdersReady.add(order);
+                        TStore.acceptOrder(order);
                     }
                     mediumSemaphoreIn.release();
+                    TClock.releaseMLQ();
 
                 } else if (!slowFoodOrders.isEmpty()) {
                     slowSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(slowFoodOrders);
                     if (order != null) {
-                        processSlowOrder(order);
-                        slowSemaphore.acquire();
-                        slowFoodOrdersReady.add(order);
+                        TStore.acceptOrder(order);
                     }
                     slowSemaphoreIn.release();
+                    TClock.releaseMLQ();
 
                 } else if (!vipOrdersReady.isEmpty()) {
                     vipSemaphoreReady.acquire();
@@ -271,87 +268,21 @@ public class MLQ extends Thread {
                     TClock.releaseMLQ();
                 } else {
 
+                    TClock.releaseMLQ();
                     continue;
                 }
 
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
-            TClock.releaseMLQ();
 
         }
 
         // }
     }
 
-    private void processVipOrder(Order order) throws InterruptedException {
-        int service = order.getOrderDescription().getServiceTime();
-        int i = 0;
-        switch (service) {
-            case 15:
-                while (i <= 1500000) {
-                    i += 1;
-                }
-                break;
-            case 25:
-                while (i <= 2500000) {
-                    i += 1;
-                }
-                break;
-            case 10:
-                while (i <= 1000000) {
-                    i += 1;
-                }
-                break;
-            case 50:
-                while (i <= 500000) {
-                    i += 1;
-                }
-                break;
-            default:
-                break;
-        }
-        this.addToStatistics(order);
-        vipSemaphore.release();
-    }
-
-    private void processFastOrder(Order order) throws InterruptedException {
-        int i = 0;
-        int service = order.getOrderDescription().getServiceTime();
-        if (service == 10) {
-            while (i <= 1000000) {
-                i += 1;
-            }
-        } else if (service == 15) {
-            while (i <= 1500000) {
-                i += 1;
-            }
-        }
-        this.addToStatistics(order);
-        fastSemaphore.release();
-    }
-
-    private void processMediumOrder(Order order) throws InterruptedException {
-        int i = 0;
-        int service = order.getOrderDescription().getServiceTime();
-        while (i <= 2500000) {
-            i += 1;
-        }
-        this.addToStatistics(order);
-        mediumSemaphore.release();
-    }
-
-    private void processSlowOrder(Order order) throws InterruptedException {
-        int i = 0;
-        int service = order.getOrderDescription().getServiceTime();
-        while (i <= 5000000) {
-            i += 1;
-        }
-        this.addToStatistics(order);
-        slowSemaphore.release();
-    }
-
-    private void addToStatistics(Order order) throws InterruptedException {
+    
+    public static void addToStatistics(Order order) throws InterruptedException {
         long endProcessedTime = TClock.getMoment();
         Statistics.addOrderToStatistics(order, endProcessedTime);
 

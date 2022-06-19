@@ -15,6 +15,7 @@ public class TDeliverOrder extends Thread {
     private DeliveryMan deliveryMan;
     private Order order;
     private static Semaphore statistics = new Semaphore(1);
+    // private static Semaphore statistics = new Semaphore(1);
 
     public TDeliverOrder(DeliveryMan deliveryMan, Order order) {
         thread = new Thread(this);
@@ -48,12 +49,13 @@ public class TDeliverOrder extends Thread {
         long finalDeliver = 0;
         long timeDeliver;
         long endProcessedTime = TClock.getMoment();
-        timeDeliver = timeDeliver();
-        while (finalDeliver < timeDeliver) {
-            finalDeliver++;
-        }
+        
         try {
             statistics.acquire();
+            timeDeliver = timeDeliver();
+            while (finalDeliver < timeDeliver) {
+                finalDeliver++;
+            }
             FCFSDelivery.push(deliveryMan);
 
             Statistics.addDeliveryToStatistics(deliveryMan, order, (timeDeliver + endProcessedTime));
