@@ -236,8 +236,6 @@ public class MLQ extends Thread {
                 }
                 if (!fastFoodOrdersReady.isEmpty()) {
                     fastSemaphoreReady.acquire();
-                    // Order order = fastFoodOrdersReady.peek();
-                    // if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
                             Order order = fastFoodOrdersReady.poll();
@@ -250,14 +248,11 @@ public class MLQ extends Thread {
                                 newDeliver.start();
                             }
                         }
-                    // }
                     fastSemaphoreReady.release();
                     TClock.releaseMLQ();
                     continue;
                 } if (!mediumFoodOrdersReady.isEmpty()) {
                     mediumSemaphoreReady.acquire();
-                    // Order order = mediumFoodOrdersReady.peek();
-                    // if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
                             Order order = mediumFoodOrdersReady.poll();
@@ -271,15 +266,12 @@ public class MLQ extends Thread {
                                 newDeliver.start();
                             }
                         }
-                    // }
                     mediumSemaphoreReady.release();
                     TClock.releaseMLQ();
                     continue;
                 }  
                 if (!slowFoodOrdersReady.isEmpty()) {
                     slowSemaphoreReady.acquire();
-                    // Order order = fastFoodOrdersReady.peek();
-                    // if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
                             Order order =fastFoodOrdersReady.poll();
@@ -293,7 +285,6 @@ public class MLQ extends Thread {
 
                             }
                         }
-                    // }
                     slowSemaphoreReady.release();
                     TClock.releaseMLQ();
                     continue;

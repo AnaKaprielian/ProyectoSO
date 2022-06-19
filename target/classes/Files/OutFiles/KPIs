@@ -1,29 +1,29 @@
 VELOCIDAD PROCESAMIENTO DE ORDENES DE CLIENTES VIPS VS NO-VIPS
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 116
-Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 124
-VEL. procesamiento VIPS > VEL. procesamiento NO-VIPS -> true
+Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 327
+Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 291
+VEL. procesamiento VIPS > VEL. procesamiento NO-VIPS -> false
 
 ----------------------------------------------
 
 VELOCIDAD PROCESAMIENTO DE ORDENES FAST/MED/SLOW
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 123
-Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 127
-Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 111
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 327
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 353
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 310
 VEL. procesamiento FAST > MED > SLOW  (VIP) -> false
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 103
-Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 112
-Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 168
-VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> true
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 283
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 280
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 302
+VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> false
 
 ----------------------------------------------
 
 VELOCIDAD ENTREGA - ORDENES VIPS VS NO VIPS
 
-Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 608
-Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 1448
+Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 620
+Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 817
 VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> true
 
 ----------------------------------------------
