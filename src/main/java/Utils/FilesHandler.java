@@ -3,7 +3,6 @@ package Utils;
 import java.io.*;
 import java.util.ArrayList;
 
-
 public class FilesHandler {
 
     public static String[] readFile(String fileName) {
@@ -30,8 +29,6 @@ public class FilesHandler {
         return listaLineasArchivo.toArray(new String[0]);
     }
 
-
-
     public static void writeFile(String fileName, String[] fileLines) throws InterruptedException {
 
         String path = "src/main/java/Files/OutFiles/";
@@ -55,11 +52,5 @@ public class FilesHandler {
         }
 
     }
-
-
-
-
-   
-
 
 }

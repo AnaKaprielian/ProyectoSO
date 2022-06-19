@@ -2,6 +2,7 @@ package Model;
 
 public class DeliveryMan {
     private String deliveryManId;
+    public boolean newOrderToDeliver = true;
 
     public DeliveryMan(String deliveryManId) {
         this.deliveryManId = deliveryManId;
@@ -13,6 +14,14 @@ public class DeliveryMan {
 
     public void setDeliveryManId(String deliveryManId) {
         this.deliveryManId = deliveryManId;
+    }
+
+    public void setDeliveryBoolean(boolean newBool) {
+        newOrderToDeliver = newBool;
+    }
+
+    public boolean getDeliveryBoolean() {
+        return newOrderToDeliver;
     }
 
     @Override

@@ -5,12 +5,22 @@ public class Order {
     private int arriveTime;
     private Food orderDescription;
     private Client client;
+    private int processTime;
 
     public Order(String orderId, int arriveTime, Food orderDescription, Client client) {
         this.orderId = orderId;
         this.arriveTime = arriveTime;
         this.orderDescription = orderDescription;
         this.client = client;
+        this.processTime = orderDescription.getServiceTime();
+    }
+
+    public int getProcessTime(){
+        return processTime;
+    }
+
+    public void reduceProcessTime(){
+        this.processTime--;
     }
 
     public String getOrderId() {

@@ -11,7 +11,7 @@ public class Food {
 
     public int getServiceTime(String description) {
 
-        switch (description){
+        switch (description) {
             case "Asado":
                 return 50;
             case "Hamburguesa":

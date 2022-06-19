@@ -2,43 +2,56 @@ package MLQ;
 
 import Model.DeliveryMan;
 import Model.Order;
+import Repository.SystemP;
 import Statistics.Statistics;
+import Threads.TStore;
 import Threads.TClock;
 import Threads.TDeliverOrder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
-public class MLQ implements Runnable {
-    private static MLQ instance;
-    private FCFSOrder vipOrders = new FCFSOrder();
-    private FCFSOrder fastFoodOrders = new FCFSOrder();
-    private FCFSOrder mediumFoodOrders = new FCFSOrder();
-    private FCFSOrder slowFoodOrders = new FCFSOrder();
+public class MLQ extends Thread {
+    private static FCFSOrder vipOrders = new FCFSOrder();
+    private static FCFSOrder fastFoodOrders = new FCFSOrder();
+    private static FCFSOrder mediumFoodOrders = new FCFSOrder();
+    private static FCFSOrder slowFoodOrders = new FCFSOrder();
+    public static Queue<Order> vipOrdersReady = new LinkedList<>();
+    public static Queue<Order> fastFoodOrdersReady = new LinkedList<>();
+    public static Queue<Order> mediumFoodOrdersReady = new LinkedList<>();
+    public static Queue<Order> slowFoodOrdersReady = new LinkedList<>();
     private Semaphore vipSemaphore = new Semaphore(0);
     private Semaphore fastSemaphore = new Semaphore(0);
     private Semaphore mediumSemaphore = new Semaphore(0);
     private Semaphore slowSemaphore = new Semaphore(0);
-     private Semaphore deliverySemaphore = new Semaphore(0);
+    public static Semaphore vipSemaphoreReady = new Semaphore(1);
+    public static Semaphore fastSemaphoreReady = new Semaphore(1);
+    public static Semaphore mediumSemaphoreReady = new Semaphore(1);
+    public static Semaphore slowSemaphoreReady = new Semaphore(1);
+    private Semaphore vipSemaphoreIn = new Semaphore(1);
+    private Semaphore fastSemaphoreIn = new Semaphore(1);
+    private Semaphore mediumSemaphoreIn = new Semaphore(1);
+    private Semaphore slowSemaphoreIn = new Semaphore(1);
+    private Semaphore deliverySemaphoreIn = new Semaphore(1);
+    private static Semaphore startSeg = new Semaphore(0);
+    private static Semaphore mutex = new Semaphore(1);
     private FCFSOrder[] queuesPlanner = {
             vipOrders, fastFoodOrders, mediumFoodOrders, slowFoodOrders
     };
-
-    public static MLQ getInstance() {
-        if (instance == null) {
-            instance = new MLQ();
-        }
-        return instance;
-    }
 
     private final Semaphore solicitudes = new Semaphore(0);
     private final Semaphore solOrder = new Semaphore(0);
     private final Semaphore order = new Semaphore(0);
 
-    public void addOrder(Order order) throws InterruptedException {
+    public static void addOrder(Order order) throws InterruptedException {
+
         int serviceTime = order.getOrderDescription().getServiceTime();
         int vipNumber = order.getClient().getClientType();
         if (vipNumber == 1) {
+
             vipOrders.push(order);
         } else {
             if (serviceTime < 20) {
@@ -50,7 +63,8 @@ public class MLQ implements Runnable {
                 slowFoodOrders.push(order);
             }
         }
-        // DataHandler.getInstance().release();
+
+        // DataHandler.release();
     }
 
     public Order nextOrder() throws InterruptedException {
@@ -63,7 +77,7 @@ public class MLQ implements Runnable {
         return null;
     }
 
-    public Order nextOrder(FCFSOrder orders) throws InterruptedException {
+    public static Order nextOrder(FCFSOrder orders) throws InterruptedException {
         Order order = orders.pop();
         if (order != null) {
             return order;
@@ -71,12 +85,16 @@ public class MLQ implements Runnable {
         return null;
     }
 
+    public static void releaseSemIn() {
+        startSeg.release();
+    }
+
     public FCFSOrder getFastFoodOrders() {
         return fastFoodOrders;
     }
 
     public void setFastFoodOrders(FCFSOrder fastFoodOrders) {
-        this.fastFoodOrders = fastFoodOrders;
+        MLQ.fastFoodOrders = fastFoodOrders;
     }
 
     public FCFSOrder getMediumFoodOrders() {
@@ -84,7 +102,7 @@ public class MLQ implements Runnable {
     }
 
     public void setMediumFoodOrders(FCFSOrder mediumFoodOrders) {
-        this.mediumFoodOrders = mediumFoodOrders;
+        MLQ.mediumFoodOrders = mediumFoodOrders;
     }
 
     public FCFSOrder getSlowFoodOrders() {
@@ -92,7 +110,7 @@ public class MLQ implements Runnable {
     }
 
     public void setSlowFoodOrders(FCFSOrder slowFoodOrders) {
-        this.slowFoodOrders = slowFoodOrders;
+        MLQ.slowFoodOrders = slowFoodOrders;
     }
 
     public FCFSOrder getVipOrders() {
@@ -100,7 +118,7 @@ public class MLQ implements Runnable {
     }
 
     public void setVipOrders(FCFSOrder vipOrders) {
-        this.vipOrders = vipOrders;
+        MLQ.vipOrders = vipOrders;
     }
 
     public FCFSOrder[] getQueuesPlanner() {
@@ -109,6 +127,38 @@ public class MLQ implements Runnable {
 
     public void setQueuesPlanner(FCFSOrder[] queuesPlanner) {
         this.queuesPlanner = queuesPlanner;
+    }
+
+    public void setMediumReady(Order order) {
+        mediumFoodOrdersReady.add(order);
+    }
+
+    public Queue<Order> getMediumReady() {
+        return mediumFoodOrdersReady;
+    }
+
+    public void setFastReady(Order order) {
+        mediumFoodOrdersReady.add(order);
+    }
+
+    public Queue<Order> getFastReady() {
+        return fastFoodOrdersReady;
+    }
+
+    public void setSlowReady(Order order) {
+        slowFoodOrdersReady.add(order);
+    }
+
+    public Queue<Order> getSlowReady() {
+        return slowFoodOrdersReady;
+    }
+
+    public void setVipReady(Order order) {
+        vipOrdersReady.add(order);
+    }
+
+    public Queue<Order> getVipReady() {
+        return vipOrdersReady;
     }
 
     @Override
@@ -120,179 +170,121 @@ public class MLQ implements Runnable {
 
     @Override
     public void run() {
-        while (TClock.getInstance().getMoment() < 2000000) {
+        
+        while (TClock.isFlag()) {
             try {
-                while (!vipOrders.isEmpty()) {
-                    Order order = MLQ.getInstance().nextOrder(vipOrders);
+                startSeg.acquire();
+                if (!vipOrders.isEmpty()) {
+                    vipSemaphoreIn.acquire();
+                    Order order = MLQ.nextOrder(vipOrders);
                     if (order != null) {
-                        this.processVipOrder(order);
-                        vipSemaphore.acquire();
-                        DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
+                        TStore.acceptOrder(order);
+                    }
+                    vipSemaphoreIn.release();
+                    TClock.releaseMLQ();
+                } else if (!fastFoodOrders.isEmpty()) {
+                    fastSemaphoreIn.acquire();
+                    Order order = MLQ.nextOrder(fastFoodOrders);
+                    if (order != null) {
+                        TStore.acceptOrder(order);
+                    }
+                    fastSemaphoreIn.release();
+                    TClock.releaseMLQ();
+
+                } else if (!mediumFoodOrders.isEmpty()) {
+                    mediumSemaphoreIn.acquire();
+                    Order order = MLQ.nextOrder(mediumFoodOrders);
+                    if (order != null) {
+                        TStore.acceptOrder(order);
+                    }
+                    mediumSemaphoreIn.release();
+                    TClock.releaseMLQ();
+
+                } else if (!slowFoodOrders.isEmpty()) {
+                    slowSemaphoreIn.acquire();
+                    Order order = MLQ.nextOrder(slowFoodOrders);
+                    if (order != null) {
+                        TStore.acceptOrder(order);
+                    }
+                    slowSemaphoreIn.release();
+                    TClock.releaseMLQ();
+
+                } else if (!vipOrdersReady.isEmpty()) {
+                    vipSemaphoreReady.acquire();
+                    Order order = vipOrdersReady.peek();
+                    if (order != null) {
+                        DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
+                            vipOrdersReady.poll();
+                            newDeliveryMan.setDeliveryBoolean(true);
                             TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                            newDeliver.run();
-                        }
-                    }
-                }
-                while (!fastFoodOrders.isEmpty()) {
-                    if (!vipOrders.isEmpty()) {
-                        Order order = MLQ.getInstance().nextOrder(vipOrders);
-                        if (order != null) {
-                            this.processVipOrder(order);
-                            vipSemaphore.acquire();
-                            DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
-                            if (newDeliveryMan != null) {
-                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                                newDeliver.run();
-                            }
-                        }
-                    } else {
-                        Order order = MLQ.getInstance().nextOrder(fastFoodOrders);
-                        if (order != null) {
-                            this.processFastOrder(order);
-                            fastSemaphore.acquire();
-                            DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
-                            if (newDeliveryMan != null) {
-                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                                newDeliver.run();
-                            }
-                        }
-                    }
-                }
-
-                while (!mediumFoodOrders.isEmpty()) {
-                    if (!vipOrders.isEmpty()) {
-                        Order order = MLQ.getInstance().nextOrder(vipOrders);
-                        if (order != null) {
-                            processVipOrder(order);
-                            vipSemaphore.acquire();
-                            DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
-                            
-                            if (newDeliveryMan != null) {
-                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                                newDeliver.run();
-                            }
-
-                        }
-
-                    } else {
-                        Order order = MLQ.getInstance().nextOrder(mediumFoodOrders);
-                        if (order != null) {
-                            this.processMediumOrder(order);
-                            mediumSemaphore.acquire();
-                            DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
-                            if (newDeliveryMan != null) {
-                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                                newDeliver.run();
-                            }
+                            newDeliver.start();
                         }
 
                     }
-                }
-
-                while (!slowFoodOrders.isEmpty()) {
-                    if (!vipOrders.isEmpty()) {
-                        Order order = MLQ.getInstance().nextOrder(vipOrders);
-                        if (order != null) {
-                            processVipOrder(order);
-                            vipSemaphore.acquire();
-                            DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
-                            if (newDeliveryMan != null) {
-                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                                newDeliver.run();
-                            }
+                    vipSemaphoreReady.release();
+                    TClock.releaseMLQ();
+                } else if (!fastFoodOrdersReady.isEmpty()) {
+                    fastSemaphoreReady.acquire();
+                    Order order = fastFoodOrdersReady.peek();
+                    if (order != null) {
+                        DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
+                        if (newDeliveryMan != null) {
+                            fastFoodOrdersReady.poll();
+                            newDeliveryMan.setDeliveryBoolean(true);
+                            TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                            newDeliver.start();
                         }
-
-                    } else {
-                        Order order = MLQ.getInstance().nextOrder(slowFoodOrders);
-                        if (order != null) {
-                            processSlowOrder(order);
-                            slowSemaphore.acquire();
-                            DeliveryMan newDeliveryMan = FCFSDelivery.getInstance().nextDelivery();
-                            if (newDeliveryMan != null) {
-                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                                newDeliver.run();
-                            }
-                        }
-
                     }
+                    fastSemaphoreReady.release();
+                    TClock.releaseMLQ();
+                } else if (!mediumFoodOrdersReady.isEmpty()) {
+                    mediumSemaphoreReady.acquire();
+                    Order order = mediumFoodOrdersReady.peek();
+                    if (order != null) {
+                        DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
+                        if (newDeliveryMan != null) {
+                            mediumFoodOrdersReady.poll();
+                            newDeliveryMan.setDeliveryBoolean(true);
+                            TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                            newDeliver.start();
+                        }
+                    }
+                    mediumSemaphoreReady.release();
+                    TClock.releaseMLQ();
+                } else if (!slowFoodOrdersReady.isEmpty()) {
+                    slowSemaphoreReady.acquire();
+                    Order order = fastFoodOrdersReady.peek();
+                    if (order != null) {
+                        DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
+                        if (newDeliveryMan != null) {
+                            fastFoodOrdersReady.poll();
+                            newDeliveryMan.setDeliveryBoolean(true);
+                            TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                            newDeliver.start();
+                        }
+                    }
+                    slowSemaphoreReady.release();
+                    TClock.releaseMLQ();
+                } else {
+
+                    TClock.releaseMLQ();
+                    continue;
                 }
+
             } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
+
         }
+
+        // }
     }
 
-    private void processVipOrder(Order order) throws InterruptedException {
-        int service = order.getOrderDescription().getServiceTime();
-        int i = 0;
-        switch (service) {
-            case 15:
-                while (i <= 1500000) {
-                    i += 1;
-                }
-                break;
-            case 25:
-                while (i <= 2500000) {
-                    i += 1;
-                }
-                break;
-            case 10:
-                while (i <= 1000000) {
-                    i += 1;
-                }
-                break;
-            case 50:
-                while (i <= 500000) {
-                    i += 1;
-                }
-                break;
-            default:
-                break;
-        }
-        this.addToStatistics(order);
-        vipSemaphore.release();
-    }
+    
+    public static void addToStatistics(Order order) throws InterruptedException {
+        long endProcessedTime = TClock.getMoment();
+        Statistics.addOrderToStatistics(order, endProcessedTime);
 
-    private void processFastOrder(Order order) throws InterruptedException {
-        int i = 0;
-        int service = order.getOrderDescription().getServiceTime();
-        if (service == 10) {
-            while (i <= 1000000) {
-                i += 1;
-            }
-        } else if (service == 15) {
-            while (i <= 1500000) {
-                i += 1;
-            }
-        }
-        this.addToStatistics(order);
-        fastSemaphore.release();
-    }
-
-    private void processMediumOrder(Order order) throws InterruptedException {
-        int i = 0;
-        int service = order.getOrderDescription().getServiceTime();
-        while (i <= 2500000) {
-            i += 1;
-        }
-        this.addToStatistics(order);
-        mediumSemaphore.release();
-    }
-
-    private void processSlowOrder(Order order) throws InterruptedException {
-        int i = 0;
-        int service = order.getOrderDescription().getServiceTime();
-        while (i <= 5000000) {
-            i += 1;
-        }
-        this.addToStatistics(order);
-        slowSemaphore.release();
-    }
-
-    private void addToStatistics(Order order) throws InterruptedException {
-        long endProcessedTime = TClock.getInstance().getMoment();
-        Statistics.getInstance().addOrderToStatistics(order, endProcessedTime);
     }
 }
