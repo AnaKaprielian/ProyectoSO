@@ -13,13 +13,13 @@ public class Food {
 
         switch (description) {
             case "Asado":
-                return 50;
+                return 1000;
             case "Hamburguesa":
-                return 25;
+                return 300;
             case "Empanadas":
-                return 15;
+                return 200;
             case "Pizza":
-                return 10;
+                return 20;
             default:
                 return 0;
         }

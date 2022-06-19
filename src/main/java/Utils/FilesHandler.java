@@ -32,7 +32,7 @@ public class FilesHandler {
     public static void writeFile(String fileName, String[] fileLines) throws InterruptedException {
 
         String path = "src/main/java/Files/OutFiles/";
-        File archivo = new File(path + fileName);
+        File archivo = new File(path + fileName + ".csv");
         archivo.delete();
         FileWriter fw;
         try {

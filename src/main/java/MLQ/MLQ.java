@@ -58,10 +58,10 @@ public class MLQ extends Thread {
 
             vipOrders.push(order);
         } else {
-            if (serviceTime < 20) {
+            if (serviceTime < 100) {
                 fastFoodOrders.push(order);
 
-            } else if (serviceTime < 40) {
+            } else if (serviceTime < 500) {
                 mediumFoodOrders.push(order);
             } else {
                 slowFoodOrders.push(order);

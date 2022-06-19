@@ -137,7 +137,7 @@ public class DataHandler {
 
     public static void generateKPIs(List<OrderStatistic> orderStatistics, List<DeliverStatistic> deliveriesStatistics)
             throws InterruptedException {
-        String[] fileLines = new String[33];
+        String[] fileLines = new String[28];
 
         long endProcessedTimeVIP_SUM = 0;
         int counterVIP = 0;
@@ -176,41 +176,41 @@ public class DataHandler {
         for (OrderStatistic orderSt : orderStatistics) {
             long endProcessedTime = orderSt.getInputOrderTime();
             if (orderSt.getOrder().getClient().getClientType() == 1) {
-                endProcessedTimeVIP_SUM = endProcessedTimeVIP_SUM + endProcessedTime;
+                endProcessedTimeVIP_SUM = endProcessedTimeVIP_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                 counterVIP++;
                 if ("Pizza".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_FAST_VIP_SUM = endProcessedTime_FAST_VIP_SUM + endProcessedTime;
+                    endProcessedTime_FAST_VIP_SUM = endProcessedTime_FAST_VIP_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_FAST_VIP++;
                 }
                 if ("Empanada".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_MED_VIP_SUM = endProcessedTime_MED_VIP_SUM + endProcessedTime;
+                    endProcessedTime_MED_VIP_SUM = endProcessedTime_MED_VIP_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_MED_VIP++;
                 }
                 if ("Hamburguesa".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_MED_VIP_SUM = endProcessedTime_MED_VIP_SUM + endProcessedTime;
+                    endProcessedTime_MED_VIP_SUM = endProcessedTime_MED_VIP_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_MED_VIP++;
                 }
                 if ("Asado".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_SLOW_VIP_SUM = endProcessedTime_SLOW_VIP_SUM + endProcessedTime;
+                    endProcessedTime_SLOW_VIP_SUM = endProcessedTime_SLOW_VIP_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_SLOW_VIP++;
                 }
             } else {
                 endProcessedTime_SUM = endProcessedTime_SUM + endProcessedTime;
                 counter++;
                 if ("Pizza".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_FAST_SUM = endProcessedTime_FAST_SUM + endProcessedTime;
+                    endProcessedTime_FAST_SUM = endProcessedTime_FAST_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_FAST++;
                 }
                 if ("Empanada".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_MED_SUM = endProcessedTime_MED_SUM + endProcessedTime;
+                    endProcessedTime_MED_SUM = endProcessedTime_MED_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_MED++;
                 }
                 if ("Hamburguesa".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_MED_SUM = endProcessedTime_MED_SUM + endProcessedTime;
+                    endProcessedTime_MED_SUM = endProcessedTime_MED_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_MED++;
                 }
                 if ("Asado".equals(orderSt.getOrder().getOrderDescription().getDescription())) {
-                    endProcessedTime_SLOW_SUM = endProcessedTime_SLOW_SUM + endProcessedTime;
+                    endProcessedTime_SLOW_SUM = endProcessedTime_SLOW_SUM + endProcessedTime - orderSt.getOrder().getArriveTime();
                     counter_SLOW++;
                 }
             }
@@ -225,7 +225,7 @@ public class DataHandler {
             endProcessedTime_FAST_VIP_Average = endProcessedTime_FAST_VIP_SUM / counter_FAST_VIP;
         if (counter_MED_VIP != 0)
             endProcessedTime_MED_VIP_Average = endProcessedTime_MED_VIP_SUM / counter_MED_VIP;
-        if (counter_FAST_VIP != 0)
+        if (counter_SLOW_VIP != 0)
             endProcessedTime_SLOW_VIP_Average = endProcessedTime_SLOW_VIP_SUM / counter_SLOW_VIP;
 
         if (counter_FAST != 0)
@@ -269,7 +269,7 @@ public class DataHandler {
 
         boolean velDeliveryVIPSisHigh = endDeliveryTime_VIP_Average < endDeliveryTime_Average;
 
-        boolean allOrdersDelivered = orderStatistics.size() == deliveriesStatistics.size();
+        boolean allOrdersDelivered = deliveriesStatistics.size() >= (0.8 * orderStatistics.size());
 
         fileLines[0] = "VELOCIDAD PROCESAMIENTO DE ORDENES DE CLIENTES VIPS VS NO-VIPS";
         fileLines[1] = "";
@@ -283,35 +283,27 @@ public class DataHandler {
         fileLines[7] = "";
         fileLines[8] = "VELOCIDAD PROCESAMIENTO DE ORDENES FAST/MED/SLOW";
         fileLines[9] = "";
-        fileLines[10] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> "
-                + endProcessedTime_FAST_VIP_Average;
-        fileLines[11] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> "
-                + endProcessedTime_MED_VIP_Average;
-        fileLines[12] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> "
-                + endProcessedTime_SLOW_VIP_Average;
-        fileLines[13] = "VEL. procesamiento FAST > MED > SLOW  (VIP) -> " + velProcFastisHigh_VipsOnly;
-        fileLines[14] = "";
-        fileLines[15] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> "
+        fileLines[10] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Fast -> "
                 + endProcessedTime_FAST_Average;
-        fileLines[16] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> "
+        fileLines[11] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Med -> "
                 + endProcessedTime_MED_Average;
-        fileLines[17] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> "
+        fileLines[12] = "Tiempo promedio de finalizacion de procesamiento de Ordenes Slow -> "
                 + endProcessedTime_SLOW_Average;
-        fileLines[18] = "VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> " + velProcFastisHigh;
-        fileLines[19] = "";
-        fileLines[20] = "----------------------------------------------";
-        fileLines[21] = "";
-        fileLines[22] = "VELOCIDAD ENTREGA - ORDENES VIPS VS NO VIPS";
-        fileLines[23] = "";
-        fileLines[24] = "Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> " + endDeliveryTime_VIP_Average;
-        fileLines[25] = "Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> " + endDeliveryTime_Average;
-        fileLines[26] = "VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> " + velDeliveryVIPSisHigh;
-        fileLines[27] = "";
-        fileLines[28] = "----------------------------------------------";
-        fileLines[29] = "";
-        fileLines[30] = "CANTIDAD DE PEDIDOS VS CANTIDAD DE ENTREGAS";
-        fileLines[31] = "";
-        fileLines[32] = "Se entregaron todos los pedidos recibidos -> " + allOrdersDelivered;
+        fileLines[13] = "VEL. procesamiento FAST > MED > SLOW -> " + velProcFastisHigh;
+        fileLines[14] = "";
+        fileLines[15] = "----------------------------------------------";
+        fileLines[16] = "";
+        fileLines[17] = "VELOCIDAD ENTREGA - ORDENES VIPS VS NO VIPS";
+        fileLines[18] = "";
+        fileLines[19] = "Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> " + endDeliveryTime_VIP_Average;
+        fileLines[20] = "Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> " + endDeliveryTime_Average;
+        fileLines[21] = "VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> " + velDeliveryVIPSisHigh;
+        fileLines[22] = "";
+        fileLines[23] = "----------------------------------------------";
+        fileLines[24] = "";
+        fileLines[25] = "CANTIDAD DE PEDIDOS VS CANTIDAD DE ENTREGAS";
+        fileLines[26] = "";
+        fileLines[27] = "Se entregaron mas del 80% de los pedidos recibidos -> " + allOrdersDelivered;
 
         FilesHandler.writeFile("KPIs", fileLines);
 

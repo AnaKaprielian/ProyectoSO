@@ -100,6 +100,8 @@ public class SystemP {
         TChargeOrders changeOrders = new TChargeOrders(orders);
         changeOrders.start();
 
+       
+
         TStore store = new TStore(1, "Pepito", null, null);
         store.start();
         
