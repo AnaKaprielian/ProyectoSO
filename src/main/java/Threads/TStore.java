@@ -1,5 +1,6 @@
 package Threads;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -11,7 +12,7 @@ import MLQ.MLQ;
 public class TStore extends Thread{
     private int storeId;
     private String storeDescription;
-    private static List<Order> storeOrders;
+    private static ArrayList<Order> storeOrders;
     private List<DeliveryMan> storeDelivers;
     private static Semaphore semStore = new Semaphore(1);
     
@@ -19,7 +20,7 @@ public class TStore extends Thread{
     public TStore(int storeId, String storeDescription, List<Order> storeOrders, List<DeliveryMan> storeDelivers) {
         this.storeId = storeId;
         this.storeDescription = storeDescription;
-        TStore.storeOrders = new LinkedList<Order>();
+        TStore.storeOrders = new ArrayList<Order>();
         this.storeDelivers = storeDelivers;
     }
 
@@ -50,8 +51,8 @@ public class TStore extends Thread{
         return storeOrders;
     }
 
-    public void setStoreOrders(List<Order> storeOrders) {
-        this.storeOrders = storeOrders;
+    public void setStoreOrders(ArrayList<Order> storeOrders) {
+        TStore.storeOrders = storeOrders;
     }
 
     public List<DeliveryMan> getStoreDelivers() {

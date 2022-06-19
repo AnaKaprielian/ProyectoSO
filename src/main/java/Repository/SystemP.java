@@ -90,6 +90,7 @@ public class SystemP {
         List<Order> orders = DataHandler.getOrdersFromFile("orders");
         System.out.println("Se han cargado: " + orders.size() + " ordenes");
         semOrder.acquire();
+
         // TODO: Inicializar reloj contador
         TClock tClock = new TClock();
         tClock.start();
@@ -101,6 +102,7 @@ public class SystemP {
 
         TStore store = new TStore(1, "Pepito", null, null);
         store.start();
+        
         // 2. Procesar de ahi
         MLQ mlq = new MLQ();
         mlq.start();
