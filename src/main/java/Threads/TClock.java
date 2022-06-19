@@ -51,7 +51,7 @@ public class TClock extends Thread {
 
     @Override
     public void run() {
-        while (count < 100000) {
+        while (count < 2000) {
             count++;
             // System.out.println("PEPITO "  + counter.get());
             TChargeOrders.releaseSeg();

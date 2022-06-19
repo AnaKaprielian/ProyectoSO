@@ -1,30 +1,30 @@
 VELOCIDAD PROCESAMIENTO DE ORDENES DE CLIENTES VIPS VS NO-VIPS
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 291
-Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 255
-VEL. procesamiento VIPS > VEL. procesamiento NO-VIPS -> false
+Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 116
+Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 124
+VEL. procesamiento VIPS > VEL. procesamiento NO-VIPS -> true
 
 ----------------------------------------------
 
 VELOCIDAD PROCESAMIENTO DE ORDENES FAST/MED/SLOW
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 293
-Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 310
-Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 276
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 123
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 127
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 111
 VEL. procesamiento FAST > MED > SLOW  (VIP) -> false
 
-Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 258
-Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 247
-Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 251
-VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> false
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 103
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 112
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 168
+VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> true
 
 ----------------------------------------------
 
 VELOCIDAD ENTREGA - ORDENES VIPS VS NO VIPS
 
-Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 649
-Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 0
-VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> false
+Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 608
+Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 1448
+VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> true
 
 ----------------------------------------------
 

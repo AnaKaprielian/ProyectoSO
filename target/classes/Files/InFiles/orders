@@ -4,8 +4,6 @@
 4,4,Pizza,C4
 5,5,Hamburguesa,C5
 6,6,Hamburguesa,C6
-7,7,Asado,C7
-8,8,Asado,C8
 9,9,Hamburguesa,C9
 10,10,Pizza,C10
 11,11,Hamburguesa,C11
@@ -41,15 +39,12 @@
 41,41,Pizza,C41
 42,42,Asado,C42
 43,43,Pizza,C43
-44,44,Asado,C44
-45,45,Asado,C45
 46,46,Asado,C46
 47,47,Pizza,C47
 48,48,Asado,C48
 49,49,Hamburguesa,C49
 50,50,Pizza,C50
 51,51,Pizza,C51
-52,52,Asado,C52
 53,53,Hamburguesa,C53
 54,54,Pizza,C54
 55,55,Empanadas,C55
@@ -57,9 +52,7 @@
 57,57,Empanadas,C57
 58,58,Asado,C58
 59,59,Empanadas,C59
-60,60,Asado,C60
 61,61,Hamburguesa,C61
-62,62,Asado,C62
 63,63,Empanadas,C63
 64,64,Empanadas,C64
 65,65,Pizza,C65
@@ -439,7 +432,6 @@
 439,439,Pizza,C439
 440,440,Hamburguesa,C440
 441,441,Empanadas,C441
-442,442,Asado,C442
 443,443,Empanadas,C443
 444,444,Asado,C444
 445,445,Asado,C445

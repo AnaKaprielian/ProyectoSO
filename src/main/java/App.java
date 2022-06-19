@@ -10,5 +10,6 @@ public class App {
 
         SystemP.initDayOfWork(1);
         System.exit(0);
+        
     }
 }
