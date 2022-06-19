@@ -216,8 +216,6 @@ public class MLQ extends Thread {
 
                 } if (!vipOrdersReady.isEmpty()) {
                     vipSemaphoreReady.acquire();
-                    // Order order = vipOrdersReady.peek();
-                    // if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
                             Order order = vipOrdersReady.poll();
@@ -228,8 +226,6 @@ public class MLQ extends Thread {
                             TClock.semTClockDeliverRe();
                             newDeliver.start();
                         }
-
-                    // }
                     vipSemaphoreReady.release();
                     TClock.releaseMLQ();
                     continue;
