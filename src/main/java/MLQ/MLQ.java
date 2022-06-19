@@ -11,6 +11,7 @@ import Threads.TDeliverOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
@@ -38,6 +39,9 @@ public class MLQ extends Thread {
     private Semaphore deliverySemaphoreIn = new Semaphore(1);
     private static Semaphore startSeg = new Semaphore(0);
     private static Semaphore mutex = new Semaphore(1);
+    public static List<TDeliverOrder> listDeliver = new LinkedList<>();
+
+
     private FCFSOrder[] queuesPlanner = {
             vipOrders, fastFoodOrders, mediumFoodOrders, slowFoodOrders
     };
@@ -63,8 +67,6 @@ public class MLQ extends Thread {
                 slowFoodOrders.push(order);
             }
         }
-
-        // DataHandler.release();
     }
 
     public Order nextOrder() throws InterruptedException {
@@ -182,7 +184,8 @@ public class MLQ extends Thread {
                     }
                     vipSemaphoreIn.release();
                     TClock.releaseMLQ();
-                } else if (!fastFoodOrders.isEmpty()) {
+                    continue;
+                }  if (!fastFoodOrders.isEmpty()) {
                     fastSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(fastFoodOrders);
                     if (order != null) {
@@ -190,8 +193,9 @@ public class MLQ extends Thread {
                     }
                     fastSemaphoreIn.release();
                     TClock.releaseMLQ();
+                    continue;
 
-                } else if (!mediumFoodOrders.isEmpty()) {
+                }  if (!mediumFoodOrders.isEmpty()) {
                     mediumSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(mediumFoodOrders);
                     if (order != null) {
@@ -199,8 +203,8 @@ public class MLQ extends Thread {
                     }
                     mediumSemaphoreIn.release();
                     TClock.releaseMLQ();
-
-                } else if (!slowFoodOrders.isEmpty()) {
+                    continue;
+                }  if (!slowFoodOrders.isEmpty()) {
                     slowSemaphoreIn.acquire();
                     Order order = MLQ.nextOrder(slowFoodOrders);
                     if (order != null) {
@@ -208,64 +212,78 @@ public class MLQ extends Thread {
                     }
                     slowSemaphoreIn.release();
                     TClock.releaseMLQ();
+                    continue;
 
-                } else if (!vipOrdersReady.isEmpty()) {
+                } if (!vipOrdersReady.isEmpty()) {
                     vipSemaphoreReady.acquire();
-                    Order order = vipOrdersReady.peek();
-                    if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
-                            vipOrdersReady.poll();
+                            Order order = vipOrdersReady.poll();
                             newDeliveryMan.setDeliveryBoolean(true);
                             TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                            TClock.semaphoreDeliveryAcq();
+                            listDeliver.add(newDeliver);
+                            TClock.semTClockDeliverRe();
                             newDeliver.start();
                         }
-
-                    }
                     vipSemaphoreReady.release();
                     TClock.releaseMLQ();
-                } else if (!fastFoodOrdersReady.isEmpty()) {
+                    continue;
+                }
+                if (!fastFoodOrdersReady.isEmpty()) {
                     fastSemaphoreReady.acquire();
-                    Order order = fastFoodOrdersReady.peek();
-                    if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
-                            fastFoodOrdersReady.poll();
-                            newDeliveryMan.setDeliveryBoolean(true);
-                            TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                            newDeliver.start();
+                            Order order = fastFoodOrdersReady.poll();
+                            if(order != null){
+                                newDeliveryMan.setDeliveryBoolean(true);
+                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                                TClock.semaphoreDeliveryAcq();
+                                listDeliver.add(newDeliver);
+                                TClock.semTClockDeliverRe();
+                                newDeliver.start();
+                            }
                         }
-                    }
                     fastSemaphoreReady.release();
                     TClock.releaseMLQ();
-                } else if (!mediumFoodOrdersReady.isEmpty()) {
+                    continue;
+                } if (!mediumFoodOrdersReady.isEmpty()) {
                     mediumSemaphoreReady.acquire();
-                    Order order = mediumFoodOrdersReady.peek();
-                    if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
-                            mediumFoodOrdersReady.poll();
-                            newDeliveryMan.setDeliveryBoolean(true);
-                            TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                            newDeliver.start();
+                            Order order = mediumFoodOrdersReady.poll();
+                            if(order != null){
+
+                                newDeliveryMan.setDeliveryBoolean(true);
+                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                                TClock.semaphoreDeliveryAcq();
+                                listDeliver.add(newDeliver);
+                                TClock.semTClockDeliverRe();
+                                newDeliver.start();
+                            }
                         }
-                    }
                     mediumSemaphoreReady.release();
                     TClock.releaseMLQ();
-                } else if (!slowFoodOrdersReady.isEmpty()) {
+                    continue;
+                }  
+                if (!slowFoodOrdersReady.isEmpty()) {
                     slowSemaphoreReady.acquire();
-                    Order order = fastFoodOrdersReady.peek();
-                    if (order != null) {
                         DeliveryMan newDeliveryMan = FCFSDelivery.nextDelivery();
                         if (newDeliveryMan != null) {
-                            fastFoodOrdersReady.poll();
-                            newDeliveryMan.setDeliveryBoolean(true);
-                            TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
-                            newDeliver.start();
+                            Order order =fastFoodOrdersReady.poll();
+                            if(order != null){
+                                newDeliveryMan.setDeliveryBoolean(true);
+                                TDeliverOrder newDeliver = new TDeliverOrder(newDeliveryMan, order);
+                                TClock.semaphoreDeliveryAcq();
+                                listDeliver.add(newDeliver);
+                                TClock.semTClockDeliverRe();
+                                newDeliver.start();
+
+                            }
                         }
-                    }
                     slowSemaphoreReady.release();
                     TClock.releaseMLQ();
+                    continue;
                 } else {
 
                     TClock.releaseMLQ();

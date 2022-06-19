@@ -232,7 +232,7 @@ public class DataHandler {
             endProcessedTime_FAST_Average = endProcessedTime_FAST_SUM / counter_FAST;
         if (counter_MED != 0)
             endProcessedTime_MED_Average = endProcessedTime_MED_SUM / counter_MED;
-        if (counter_FAST != 0)
+        if (counter_SLOW != 0)
             endProcessedTime_SLOW_Average = endProcessedTime_SLOW_SUM / counter_SLOW;
 
         boolean velProcessingVIPSisHigh = endProcessedTimeVIP_Average < endProcessedTime_Average;

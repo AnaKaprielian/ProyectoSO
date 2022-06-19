@@ -16,15 +16,19 @@ public class TClock extends Thread {
     private static Semaphore semTClock = new Semaphore(0);
     private static Semaphore semTClockOrder = new Semaphore(0);
     private static Semaphore semTClockMLQ = new Semaphore(0);
+    private static Semaphore semTClockDeliver = new Semaphore(1);
     public static Semaphore semSyncStore = new Semaphore(0);
-    
+    private static int count ;
+
+
     public TClock() {
         thread = new Thread(this);
         flag = true;
+        count = 0;
     }
 
     public static long getMoment() {
-        return counter.get();
+        return count;
     }
 
     public static void releaseOrder() {
@@ -34,23 +38,41 @@ public class TClock extends Thread {
     public static void releaseMLQ() {
         semTClockMLQ.release();
     }
+    
+    public static void semTClockDeliverRe(){
+        semTClockDeliver.release();
+    }
+
+    public static void semaphoreDeliveryAcq() throws InterruptedException{
+        semTClockDeliver.acquire();
+    }
+
+    
 
     @Override
     public void run() {
-        while (counter.get() < 200000) {
-            counter.getAndIncrement();
+        while (count < 20000) {
+            count++;
             // System.out.println("PEPITO "  + counter.get());
             TChargeOrders.releaseSeg();
             MLQ.releaseSemIn();
+            
             semSyncStore.release();
+            
             try {
+                semTClockDeliver.acquire();
+                for(TDeliverOrder deliverOrder : MLQ.listDeliver){
+                    deliverOrder.releaseCounter();
+                }
+                semTClockDeliver.release();
+
                 semTClockMLQ.acquire();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-        
+
         SystemP.releaseFiles();
         // SystemP.hilosDelete();
         setFlag(false);

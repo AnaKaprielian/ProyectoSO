@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
-import MLQ.FCFSDelivery;
+import MLQ.*;
 import Model.DeliveryMan;
 import Model.Order;
 import Repository.SystemP;
@@ -15,7 +15,7 @@ public class TDeliverOrder extends Thread {
     private DeliveryMan deliveryMan;
     private Order order;
     private static Semaphore statistics = new Semaphore(1);
-    // private static Semaphore statistics = new Semaphore(1);
+    private static Semaphore semCounter = new Semaphore(1);
 
     public TDeliverOrder(DeliveryMan deliveryMan, Order order) {
         thread = new Thread(this);
@@ -44,25 +44,37 @@ public class TDeliverOrder extends Thread {
         return timeDeliver;
     }
 
+    public void releaseCounter(){
+        semCounter.release();
+    }
+
+    
+
     @Override
     public void run() {
-        long finalDeliver = 0;
-        long timeDeliver;
-        long endProcessedTime = TClock.getMoment();
-        
-        try {
-            statistics.acquire();
-            timeDeliver = timeDeliver();
-            while (finalDeliver < timeDeliver) {
-                finalDeliver++;
+        int countDeliver = timeDeliver();
+        // long endProcessedTime = TClock.getMoment();
+        while (countDeliver >= 0) {
+            try {
+                semCounter.acquire();
+                statistics.acquire();
+                countDeliver--;
+                // System.out.println(countDeliver);
+                if(countDeliver == 0){
+                    FCFSDelivery.push(deliveryMan);
+                    Statistics.addDeliveryToStatistics(deliveryMan, order, TClock.getMoment());
+                    TClock.semaphoreDeliveryAcq();
+                    MLQ.listDeliver.remove(this);
+                    TClock.semTClockDeliverRe();
+                    
+                }
+                statistics.release();
+                
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            FCFSDelivery.push(deliveryMan);
-
-            Statistics.addDeliveryToStatistics(deliveryMan, order, (timeDeliver + endProcessedTime));
-            statistics.release();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+        
 
     }
 

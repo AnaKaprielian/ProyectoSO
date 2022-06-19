@@ -1,0 +1,33 @@
+VELOCIDAD PROCESAMIENTO DE ORDENES DE CLIENTES VIPS VS NO-VIPS
+
+Tiempo promedio de finalizacion de procesamiento de Ordenes VIP -> 658
+Tiempo promedio de finalizacion de procesamiento de Ordenes No-VIP -> 563
+VEL. procesamiento VIPS > VEL. procesamiento NO-VIPS -> false
+
+----------------------------------------------
+
+VELOCIDAD PROCESAMIENTO DE ORDENES FAST/MED/SLOW
+
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (VIP) -> 665
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (VIP) -> 706
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (VIP) -> 618
+VEL. procesamiento FAST > MED > SLOW  (VIP) -> false
+
+Tiempo promedio de finalizacion de procesamiento de Ordenes Fast (NO-VIP) -> 569
+Tiempo promedio de finalizacion de procesamiento de Ordenes Med (NO-VIP) -> 544
+Tiempo promedio de finalizacion de procesamiento de Ordenes Slow (NO-VIP) -> 547
+VEL. procesamiento FAST > MED > SLOW  (NO-VIP) -> false
+
+----------------------------------------------
+
+VELOCIDAD ENTREGA - ORDENES VIPS VS NO VIPS
+
+Tiempo promedio de Tiempo de Entrega de Ordenes VIP -> 876
+Tiempo promedio de Tiempo de Entrega de Ordenes No-VIP -> 1507
+VEL. Entrega VIPs > VEL. Entrega NO-VIPS -> true
+
+----------------------------------------------
+
+CANTIDAD DE PEDIDOS VS CANTIDAD DE ENTREGAS
+
+Se entregaron todos los pedidos recibidos -> false
