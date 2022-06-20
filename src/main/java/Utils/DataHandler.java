@@ -137,7 +137,7 @@ public class DataHandler {
 
     public static void generateKPIs(List<OrderStatistic> orderStatistics, List<DeliverStatistic> deliveriesStatistics)
             throws InterruptedException {
-        String[] fileLines = new String[28];
+        String[] fileLines = new String[29];
 
         long endProcessedTimeVIP_SUM = 0;
         int counterVIP = 0;
@@ -270,6 +270,7 @@ public class DataHandler {
         boolean velDeliveryVIPSisHigh = endDeliveryTime_VIP_Average < endDeliveryTime_Average;
 
         boolean allOrdersDelivered = deliveriesStatistics.size() >= (0.8 * orderStatistics.size());
+        int porcentajeEntregas = deliveriesStatistics.size() * 100 /orderStatistics.size();
 
         fileLines[0] = "VELOCIDAD PROCESAMIENTO DE ORDENES DE CLIENTES VIPS VS NO-VIPS";
         fileLines[1] = "";
@@ -303,7 +304,8 @@ public class DataHandler {
         fileLines[24] = "";
         fileLines[25] = "CANTIDAD DE PEDIDOS VS CANTIDAD DE ENTREGAS";
         fileLines[26] = "";
-        fileLines[27] = "Se entregaron mas del 80% de los pedidos recibidos -> " + allOrdersDelivered;
+        fileLines[27] = "Porcentaje pedidos enviados -> " + porcentajeEntregas;
+        fileLines[28] = "Se entregaron mas del 80% de los pedidos recibidos -> " + allOrdersDelivered;
 
         FilesHandler.writeFile("KPIs", fileLines);
 
